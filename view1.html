@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.group text {
+  font: 11px sans-serif;
+  pointer-events: none;
+}
+
+.group path {
+  stroke: #000;
+}
+
+path.chord {
+  stroke-width: .75;
+  fill-opacity: .75;
+}
+form {
+  margin: 20px;
+}
+
+</style>
+<body>
+  <h2>&nbsp;&nbsp;&nbsp;English Premier League Goals</h2>
+
+  <form>
+    <label><input type="radio" name="mode" value="goalsScored" checked>&nbsp;Goals Scored&nbsp;&nbsp;</label>
+    <label><input type="radio" name="mode" value="goalsConceded" >&nbsp;Goals Conceded</label>
+  </form>
+
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script>
+var margin = {top: 20, right: 10, bottom: 20, left: 10};
+var width = 700 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+var  outerRadius = Math.min(width, height) / 2 - 4,
+    innerRadius = outerRadius - 20;
+
+var format = d3.format(",.3r");
+
+// Square matrices, asynchronously loaded.
+var goals = [];
+
+// The chord layout, for computing the angles of chords and groups.
+var layout = d3.layout.chord()
+    .padding(.04);
+
+// The color scale, for different categories of goals rank.
+var fill = d3.scale.ordinal()
+    .domain([0, 1, 2])
+    .range(["#DB704D", "#D2D0C6", "#ECD08D", "#F8EDD3"]);
+
+// The arc generator, for the groups.
+var arc = d3.svg.arc()
+    .innerRadius(innerRadius)
+    .outerRadius(outerRadius);
+
+// The chord generator for the chords.
+var chord = d3.svg.chord()
+    .radius(innerRadius);
+
+// Add an SVG element for each diagram, and translate the origin to the center.
+var svg = d3.select("div").select(".chart")
+    .data([goals])
+  .enter().append("div")
+    .style("display", "inline-block")
+    .style("width", width + margin.left + margin.right)
+    .style("height", height + margin.top + margin.bottom)
+  .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+// Load the data file
+d3.csv("GoalsByClub.csv", type, function(error, data) {
+  if (error) throw error;
+
+  var teamByName = d3.map(),
+      teamIndex = -1,
+      teamByIndex = [];
+
+  // Compute a unique index for each team.
+  data.forEach(function(d) {
+    if (teamByName.has(d.Team1)) d.Team1 = teamByName.get(d.Team1);
+    else teamByName.set(d.Team1, d.Team1 = {name: d.Team1, index: ++teamIndex});
+    if (teamByName.has(d.Team2)) d.Team2 = teamByName.get(d.Team2);
+    else teamByName.set(d.Team2, d.Team2 = {name: d.Team2, index: ++teamIndex});
+    d.Team2.Goals = d.Goals;
+  });
+
+  // Initialize a square matrix of debits and credits.
+  for (var i = 0; i <= teamIndex; i++) {
+    goals[i] = [];
+    for (var j = 0; j <= teamIndex; j++) {
+      goals[i][j] = 0;
+    }
+  }
+
+  // Populate the matrices, and stash a map from index to country.
+  data.forEach(function(d) {
+    goals[d.Team1.index][d.Team2.index] = d;
+    teamByIndex[d.Team1.index] = d.Team1;
+  });
+
+  // For each diagram.
+  svg.each(function(matrix, j) {
+    var svg = d3.select(this);
+
+    // Compute the chord layout.
+    layout.matrix(matrix);
+
+    // Add chords.
+    svg.selectAll(".chord")
+        .data(layout.chords)
+      .enter().append("path")
+          .attr("class", function(d){ return "chord chord-" + d.source.index; })
+          .style("fill", function(d) { return fill(d.source.value.Goals); })
+          .style("stroke", function(d) { return d3.rgb(fill(d.source.value.Goals)).darker(); })
+          .attr("d", chord)
+          .on("mouseover", mouseover)
+      .append("title")
+        .text(function(d) { return d.source.value.Team1.name + " scored " + d.source.value.Team2.name + " " + format(d.source.value) + " " + "Goals"; });
+
+    // Add groups.
+    var g = svg.selectAll(".group")
+        .data(layout.groups)
+      .enter().append("g")
+        .attr("class", "group");
+
+    // Add the group arc.
+    g.append("path")
+         .style("fill", function(d) { return fill(teamByIndex[d.index].Goals); })
+         .attr("id", function(d, i) { return "group" + d.index + "-" + j; })
+         .attr("d", arc)
+         .on("mouseover", mouseover)
+         .on("mouseleave", mouseleave)
+      .append("title")
+        .text(function(d) { return teamByIndex[d.index].name + " " + "scored" + " " + format(d.value) + " " + "goals"; });
+
+    // Add the group label (only for large groups, where it will fit).
+    // An alternative labeling mechanism would be nice for the small groups.
+    g.append("text")
+        .attr("x", 6)
+        .attr("dy", 15)
+        .filter(function(d) { return d.value > 200; })
+      .append("textPath")
+        .attr("xlink:href", function(d) { return "#group" + d.index + "-" + j; })
+        .text(function(d) { return teamByIndex[d.index].name; });
+  });
+});
+
+
+d3.selectAll("input").on("change", function change() {
+  d3.select("div").remove();
+    if (this.value == "goalsScored") {
+      // Add an SVG element for each diagram, and translate the origin to the center.
+      goals = [];
+      var svg = d3.select("div").select(".chart")
+          .data([goals])
+        .enter().append("div")
+          .style("display", "inline-block")
+          .style("width", width + margin.left + margin.right)
+          .style("height", height + margin.top + margin.bottom)
+        .append("svg")
+          .attr("width", width)
+          .attr("height", height)
+        .append("g")
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+      // Load the data file
+      d3.csv("GoalsByClub.csv", type, function(error, data) {
+        if (error) throw error;
+
+        var teamByName = d3.map(),
+            teamIndex = -1,
+            teamByIndex = [];
+
+        // Compute a unique index for each team.
+        data.forEach(function(d) {
+          if (teamByName.has(d.Team1)) d.Team1 = teamByName.get(d.Team1);
+          else teamByName.set(d.Team1, d.Team1 = {name: d.Team1, index: ++teamIndex});
+          if (teamByName.has(d.Team2)) d.Team2 = teamByName.get(d.Team2);
+          else teamByName.set(d.Team2, d.Team2 = {name: d.Team2, index: ++teamIndex});
+          d.Team1.Goals = d.Goals;
+        });
+
+        // Initialize a square matrix of debits and credits.
+        for (var i = 0; i <= teamIndex; i++) {
+          goals[i] = [];
+          for (var j = 0; j <= teamIndex; j++) {
+            goals[i][j] = 0;
+          }
+        }
+
+        // Populate the matrices, and stash a map from index to country.
+        data.forEach(function(d) {
+          goals[d.Team1.index][d.Team2.index] = d;
+          teamByIndex[d.Team1.index] = d.Team1;
+        });
+
+        // For each diagram.
+        svg.each(function(matrix, j) {
+          var svg = d3.select(this);
+
+          // Compute the chord layout.
+          layout.matrix(matrix);
+
+          // Add chords.
+          svg.selectAll(".chord")
+              .data(layout.chords)
+            .enter().append("path")
+                .attr("class", function(d){ return "chord chord-" + d.source.index; })
+                .style("fill", function(d) { return fill(d.source.value.Goals); })
+                .style("stroke", function(d) { return d3.rgb(fill(d.source.value.Goals)).darker(); })
+                .attr("d", chord)
+                .on("mouseover", mouseover)
+            .append("title")
+              .text(function(d) { return d.source.value.Team1.name + " scored " + d.source.value.Team2.name + " " + format(d.source.value) + " " + "Goals"; });
+
+          // Add groups.
+          var g = svg.selectAll(".group")
+              .data(layout.groups)
+            .enter().append("g")
+              .attr("class", "group");
+
+          // Add the group arc.
+          g.append("path")
+               .style("fill", function(d) { return fill(teamByIndex[d.index].Goals); })
+               .attr("id", function(d, i) { return "group" + d.index + "-" + j; })
+               .attr("d", arc)
+               .on("mouseover", mouseover)
+               .on("mouseleave", mouseleave)
+            .append("title")
+              .text(function(d) { return teamByIndex[d.index].name + " " + "scored" + " " + format(d.value) + " " + "goals"; });
+
+          // Add the group label (only for large groups, where it will fit).
+          // An alternative labeling mechanism would be nice for the small groups.
+          g.append("text")
+              .attr("x", 6)
+              .attr("dy", 15)
+              .filter(function(d) { return d.value > 200; })
+            .append("textPath")
+              .attr("xlink:href", function(d) { return "#group" + d.index + "-" + j; })
+              .text(function(d) { return teamByIndex[d.index].name; });
+        });
+      });
+    } else {
+      // Add an SVG element for each diagram, and translate the origin to the center.
+      d3.select("div").remove();
+      var conceded = [];
+      var svg = d3.select("div").select(".chart")
+          .data([conceded])
+        .enter().append("div")
+          .style("display", "inline-block")
+          .style("width", width + margin.left + margin.right)
+          .style("height", height + margin.top + margin.bottom)
+        .append("svg")
+          .attr("width", width)
+          .attr("height", height)
+        .append("g")
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+      // Load the data file
+      d3.csv("GoalsByClub.csv", type, function(error, data) {
+        if (error) throw error;
+
+        var teamByName = d3.map(),
+            teamIndex = -1,
+            teamByIndex = [];
+
+        // Compute a unique index for each team.
+        data.forEach(function(d) {
+          if (teamByName.has(d.Team1)) d.Team1 = teamByName.get(d.Team1);
+          else teamByName.set(d.Team1, d.Team1 = {name: d.Team1, index: ++teamIndex});
+          if (teamByName.has(d.Team2)) d.Team2 = teamByName.get(d.Team2);
+          else teamByName.set(d.Team2, d.Team2 = {name: d.Team2, index: ++teamIndex});
+          d.Team2.Goals = d.Goals;
+        });
+
+        // Initialize a square matrix of debits and credits.
+        for (var i = 0; i <= teamIndex; i++) {
+          conceded[i] = [];
+          for (var j = 0; j <= teamIndex; j++) {
+            conceded[i][j] = 0;
+          }
+        }
+
+        // Populate the matrices, and stash a map from index to country.
+        data.forEach(function(d) {
+          conceded[d.Team2.index][d.Team1.index] = d;
+          teamByIndex[d.Team2.index] = d.Team2;
+        });
+
+        // For each diagram.
+        svg.each(function(matrix, j) {
+          var svg = d3.select(this);
+
+          // Compute the chord layout.
+          layout.matrix(matrix);
+
+          // Add chords.
+          svg.selectAll(".chord")
+              .data(layout.chords)
+            .enter().append("path")
+                .attr("class", function(d){ return "chord chord-" + d.source.index; })
+                .style("fill", function(d) { return fill(d.source.value.Goals); })
+                .style("stroke", function(d) { return d3.rgb(fill(d.source.value.Goals)).darker(); })
+                .attr("d", chord)
+                .on("mouseover", mouseover)
+            .append("title")
+              .text(function(d) { return d.source.value.Team2.name + " conceded " + format(d.source.value) + " " + "goals to" + " " + d.source.value.Team1.name; });
+
+          // Add groups.
+          var g = svg.selectAll(".group")
+              .data(layout.groups)
+            .enter().append("g")
+              .attr("class", "group");
+
+          // Add the group arc.
+          g.append("path")
+               .style("fill", function(d) { return fill(teamByIndex[d.index].Goals); })
+               .attr("id", function(d, i) { return "group" + d.index + "-" + j; })
+               .attr("d", arc)
+               .on("mouseover", mouseover)
+               .on("mouseleave", mouseleave)
+            .append("title")
+              .text(function(d) { return teamByIndex[d.index].name + " " + "conceded" + " " + format(d.value) + " " + "Goals"; });
+
+          // Add the group label (only for large groups, where it will fit).
+          // An alternative labeling mechanism would be nice for the small groups.
+          g.append("text")
+              .attr("x", 6)
+              .attr("dy", 15)
+              .filter(function(d) { return d.value > 150; })
+            .append("textPath")
+              .attr("xlink:href", function(d) { return "#group" + d.index + "-" + j; })
+              .text(function(d) { return teamByIndex[d.index].name; });
+        });
+      });
+    }
+  });
+
+  function type(d) {
+    d.GoalsRank = +d.GoalsRank;
+    d.Goals = +d.Goals;
+    d.valueOf = value; // for chord layout
+    return d;
+  }
+
+  function value() {
+    return this.Goals;
+  }
+
+
+  function mouseover(d) {
+
+    // Fade all the segments.
+    d3.selectAll("path")
+        .style("opacity", 0.3);
+
+    // Then highlight only current team.
+    d3.select(this) 
+      .style("opacity", 1);
+
+    d3.selectAll((".chord-" + d.index))
+        .style("opacity", 1);
+
+  }
+
+  // Restore everything to full opacity when moving off the visualization.
+  function mouseleave(d) {
+
+    // Transition each segment to full opacity and then reactivate it.
+    d3.selectAll("path")
+        .style("opacity", 1);
+  }
+</script>

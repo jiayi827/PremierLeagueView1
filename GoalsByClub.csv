@@ -1,0 +1,91 @@
+Team1,Team2,Goals,CleanSheets,RedYellow,GoalsRank,CleanSheetsRank,RedYellowRank
+Man. United,Man. City,59,14,69,1,2,1
+Man. United,Arsenal,70,16,106,2,2,3
+Man. United,Hotspur,88,25,89,3,3,2
+Man. United,Liverpool,73,15,102,2,2,3
+Man. United,Chelsea,59,11,105,1,2,3
+Man. United,Everton,91,22,64,3,3,1
+Man. United,Sunderland,60,16,43,2,2,0
+Man. United,Stoke City,37,7,24,0,1,0
+Man. United,Swansea,20,3,21,0,0,0
+Man. City,Man. United,51,7,87,1,1,2
+Man. City,Arsenal,36,8,88,0,1,2
+Man. City,Hotspur,54,7,73,1,1,2
+Man. City,Liverpool,43,6,52,0,1,1
+Man. City,Chelsea,34,8,73,0,1,2
+Man. City,Everton,51,9,74,1,1,2
+Man. City,Sunderland,53,8,44,1,1,0
+Man. City,Stoke City,31,8,27,0,1,0
+Man. City,Swansea,25,4,26,0,0,0
+Arsenal,Man. United,49,14,110,1,2,3
+Arsenal,Man. City,66,17,56,2,2,1
+Arsenal,Hotspur,80,13,92,3,2,3
+Arsenal,Liverpool,62,12,87,2,2,2
+Arsenal,Chelsea,64,12,94,2,2,3
+Arsenal,Everton,92,18,75,3,2,2
+Arsenal,Sunderland,54,14,49,1,2,0
+Arsenal,Stoke City,30,7,15,0,1,0
+Arsenal,Swansea,21,4,13,0,0,0
+Liverpool,Man. United,56,11,89,1,2,2
+Liverpool,Man. City,63,13,55,2,2,1
+Liverpool,Hotspur,85,19,77,3,2,2
+Liverpool,Arsenal,71,16,78,2,2,2
+Liverpool,Chelsea,60,13,90,2,2,3
+Liverpool,Everton,67,19,90,2,2,3
+Liverpool,Sunderland,25,18,56,0,2,1
+Liverpool,Stoke City,25,9,19,0,1,0
+Liverpool,Swansea,22,5,20,0,1,0
+Chelsea,Man. United,66,16,123,2,2,3
+Chelsea,Man. City,66,19,70,2,2,2
+Chelsea,Hotspur,92,21,93,3,3,3
+Chelsea,Arsenal,68,16,118,2,2,3
+Chelsea,Liverpool,62,15,107,2,2,3
+Chelsea,Everton,80,17,90,3,2,3
+Chelsea,Sunderland,73,11,43,2,2,0
+Chelsea,Stoke City,36,9,18,0,1,0
+Chelsea,Swansea,23,4,22,0,0,0
+Everton,Man. United,45,8,91,1,1,3
+Everton,Man. City,51,15,64,1,2,1
+Everton,Hotspur,48,12,85,1,2,2
+Everton,Arsenal,42,6,96,0,1,3
+Everton,Liverpool,44,15,127,0,2,3
+Everton,Chelsea,53,10,79,1,2,2
+Everton,Sunderland,54,12,49,1,2,0
+Everton,Stoke City,24,6,15,0,1,0
+Everton,Swansea,14,6,18,0,1,0
+Sunderland,Man. United,19,3,57,0,0,1
+Sunderland,Man. City,24,5,51,0,1,1
+Sunderland,Hotspur,30,4,59,0,0,1
+Sunderland,Arsenal,19,9,69,0,1,1
+Sunderland,Liverpool,18,5,59,0,1,1
+Sunderland,Chelsea,39,5,55,0,1,1
+Sunderland,Everton,32,7,46,0,1,0
+Sunderland,Stoke City,21,8,33,0,1,0
+Sunderland,Swansea,11,4,21,0,0,0
+Stoke City,Man. United,15,1,33,0,0,0
+Stoke City,Man. City,10,4,24,0,0,0
+Stoke City,Hotspur,19,3,40,0,0,0
+Stoke City,Arsenal,15,3,28,0,0,0
+Stoke City,Liverpool,18,6,37,0,1,0
+Stoke City,Chelsea,11,2,41,0,0,0
+Stoke City,Everton,18,5,34,0,1,0
+Stoke City,Sunderland,16,6,38,0,1,0
+Stoke City,Swansea,17,3,23,0,0,0
+Swansea,Man. United,11,0,14,0,0,0
+Swansea,Man. City,10,2,12,0,0,0
+Swansea,Hotspur,10,0,23,0,0,0
+Swansea,Arsenal,15,2,20,0,0,0
+Swansea,Liverpool,14,3,13,0,0,0
+Swansea,Chelsea,10,1,27,0,0,0
+Swansea,Everton,7,3,27,0,0,0
+Swansea,Sunderland,16,5,18,0,1,0
+Swansea,Stoke City,15,2,16,0,0,0
+Hotspur,Man. United,41,6,84,0,1,2
+Hotspur,Man. City,59,13,66,1,2,1
+Hotspur,Swansea,25,3,22,0,0,0
+Hotspur,Arsenal,59,7,115,1,1,3
+Hotspur,Liverpool,55,11,79,1,2,2
+Hotspur,Chelsea,47,8,106,1,1,3
+Hotspur,Everton,68,18,80,2,2,2
+Hotspur,Sunderland,58,10,38,1,2,0
+Hotspur,Stoke City,30,5,29,0,1,0

@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-
+h2 {
+  color: #333333;
+  font-family: "Arial";
+}
+label {
+  color: #4B0082;
+  font-family: "Arial";
+}
 .group text {
   font: 11px sans-serif;
   pointer-events: none;
@@ -19,9 +26,21 @@ form {
   margin: 20px;
 }
 
+div.tooltip {
+  position: absolute;
+  background: #eee;
+  box-shadow: 0 0 5px #999999;
+  color: #333;
+  padding: 5px;
+  font-family: Arial;
+  pointer-events: none;
+  font-size: 12px;
+  border-radius: 3px;
+}
+
 </style>
 <body>
-  <h2>&nbsp;&nbsp;&nbsp;English Premier League Goals</h2>
+  <h2>&nbsp;&nbsp;&nbsp;English Premier League Goals</font></h2>
 
   <form>
     <label><input type="radio" name="mode" value="goalsScored" checked>&nbsp;Goals Scored&nbsp;&nbsp;</label>
@@ -30,7 +49,6 @@ form {
 
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script>
-// default view
 var margin = {top: 20, right: 10, bottom: 20, left: 10};
 var width = 700 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
@@ -103,6 +121,10 @@ d3.csv("GoalsByClub.csv", type, function(error, data) {
     goals[d.Team1.index][d.Team2.index] = d;
     teamByIndex[d.Team1.index] = d.Team1;
   });
+
+  var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
   // For each diagram.
   svg.each(function(matrix, j) {
